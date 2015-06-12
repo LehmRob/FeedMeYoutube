@@ -1,0 +1,4 @@
+rootProject.name = 'feedmeyoutube'
+include 'feedmeyoutube-core'
+include 'feedmeyoutube-crawler'
+

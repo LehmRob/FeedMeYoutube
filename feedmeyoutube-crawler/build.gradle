@@ -4,4 +4,4 @@ dependencies {
     compile project(':feedmeyoutube-core')
 }
 
-mainClassName = 'Main'
+mainClassName = 'feedmeyoutubecrawler.Main'

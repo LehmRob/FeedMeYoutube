@@ -19,14 +19,20 @@ package feedmeyoutubecrawler;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import feedmeyoutubecore.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Main class which runs the main application.
  * @author Robert Lehmann
  * @since 1.0
  */
 public class Main {
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] arg)
     {
-        System.out.println("Hello World");
+        LOG.info("Starting crawler version: {}", Version.VERSION);
     }
 }

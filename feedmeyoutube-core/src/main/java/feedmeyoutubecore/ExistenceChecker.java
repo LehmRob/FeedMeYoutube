@@ -57,7 +57,13 @@ public class ExistenceChecker {
             if (!res.next()) {
                 Log.info("Unknown Youtube Playlist! A new record will be added!");
                 SavePlaylist.Save(playlist, con);
-            } else Log.info("The Youtube Playlist with the specific ID " + playlist.PlaylistId + " has already been recorded!");
+            } else {
+                Log.info("The Youtube Playlist with the specific ID " + playlist.PlaylistId + " has already been recorded!");
+                Log.info("Refreshing all the containing Videos für the Playlist " + playlist.PlaylistTitle);
+
+                RefreshPlaylist(playlist);
+
+            }
 
             res.close();
             statement.close();
@@ -68,8 +74,39 @@ public class ExistenceChecker {
         }
     }
 
-    public static void CheckItem(YouTubeVideo video, String PlaylistId)
+    private static void RefreshPlaylist(YouTubePlaylist playlist)
     {
-        // Will be added later
+        for (final String videoId : playlist.VideoList)
+        {
+            CheckItem(videoId, playlist.PlaylistId);
+        }
+    }
+
+    private static void CheckItem(String videoId, String playlistId)
+    {
+        try {
+            // Establish the Database connection
+            Connection con = DbConnector.Connect();
+
+            // Create the SELECT Statement
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM ytplaylistitems " +
+                                                               "WHERE PlaylistId = ? " +
+                                                               "AND VideoId = ?");
+            statement.setString(1, playlistId);
+            statement.setString(2, videoId);
+            ResultSet res = statement.executeQuery();
+
+            if (!res.next()) {
+                Log.info("Unknown Youtube Playlist! A new record will be added!");
+                // TODO: Add SavePlaylistItem Method
+            } else Log.info("The Video with the ID " + videoId + " is already registered for the Playlist with the ID " + playlistId);
+
+            res.close();
+            statement.close();
+            con.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

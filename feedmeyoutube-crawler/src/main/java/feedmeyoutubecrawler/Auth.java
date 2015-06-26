@@ -19,7 +19,6 @@ package feedmeyoutubecrawler;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -32,19 +31,18 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.youtube.YouTube;
-import sun.management.jmxremote.LocalRMIServerSocketFactory;
+import org.aeonbits.owner.ConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Performing the authentification on youtube
@@ -58,22 +56,23 @@ public class Auth
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static final String CREDENTIALS_DIRECTORY = ".oauth-credentials";
+    private static final CrawlerConfig config = ConfigFactory.create(CrawlerConfig.class);
+    private static final Pattern HOME_DIR = Pattern.compile("~");
+    private static final Logger LOG = LoggerFactory.getLogger(Auth.class);
 
     /**
      * Perform the authorisation for the youtube account
      * @param scopes {@linkplain List} of scopes to perform authorization
      * @param credentailDataStore name of the credential datastore
-     * @param jsonPath {@linkplain Path} of the json file which
      *
      * @return {@linkplain Credential} object which is used for Requests
      * @throws IOException an error occurs during the authorisation.
      *
      * @since 1.0
      */
-    public static Credential authorize (List<String> scopes, String credentailDataStore, final Path jsonPath)
+    public static Credential authorize (List<String> scopes, String credentailDataStore)
             throws IOException {
-        final Reader reader = new InputStreamReader(Files.newInputStream(jsonPath,
-                StandardOpenOption.READ));
+        final Reader reader = new InputStreamReader(Auth.class.getResourceAsStream("/youtube.json"));
         final GoogleClientSecrets secrets = GoogleClientSecrets.load(JSON_FACTORY, reader);
         final FileDataStoreFactory dataStoreFactory = new FileDataStoreFactory(Paths.get(System
                 .getProperty("user.home") + "/" + CREDENTIALS_DIRECTORY).toFile());
@@ -82,8 +81,9 @@ public class Auth
                 secrets, scopes).setCredentialDataStore(dataStore).build();
         final LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8080).build();
 
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize(config.userId());
     }
+
 
     /**
      * Gets the instance of {@linkplain HttpTransport}

@@ -30,10 +30,12 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"file:~/.crawler.config",
     "classpath:crawler.config"})
 public interface CrawlerConfig extends Config {
-    @Key("youtube.userId")
+    @Key("userId")
     String userId();
 
     @Key("jsonPath")
     String jsonPath();
 
+    @Key("channelId")
+    String channelId();
 }

@@ -35,6 +35,8 @@ public class Main
     public static void main(String[] arg)
     {
         LOG.debug("Starting App in Version {}", Version.VERSION);
+        final Crawler crawler = new Crawler();
 
+        crawler.run();
     }
 }

@@ -16,4 +16,18 @@ public class YouTubeVideo {
         this.VideoDescription = VideoDescription;
         this.UploadDate = UploadDate;
     }
+
+    /**
+     * {@inheritDoc }
+     * @since 1.0
+     */
+    @Override
+    public String toString() {
+        return "YoutubeVideo: \n" +
+                "  Title: " + VideoTitle + "\n" +
+                "  Description: " + VideoDescription + "\n" +
+                "  ID: " + VideoId + "\n" + 
+                "  Uploaded at: " +  UploadDate + "\n" +
+                "----------------------------------------\n";
+    }
 }

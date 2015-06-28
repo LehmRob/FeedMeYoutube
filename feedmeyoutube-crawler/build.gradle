@@ -9,4 +9,8 @@ dependencies {
     compile 'org.aeonbits.owner:owner:1.0.8'
 }
 
-//mainClassName = 'feedmeyoutubecrawler.Main'
+mainClassName = 'feedmeyoutubecrawler.Main'
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'feedmeyoutubecrawler.Main'
+}

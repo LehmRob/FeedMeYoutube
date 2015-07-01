@@ -35,8 +35,6 @@ public class Crawler {
 
     private static final String APP_NAME = "feedmeyoutube";
     private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
-    private static final CrawlerConfig config = ConfigFactory.create(
-            CrawlerConfig.class);
 
     private final static List<String> scopes = Lists.newArrayList(
             "https://www.googleapis.com/auth/youtube.readonly");

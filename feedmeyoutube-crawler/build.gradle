@@ -6,7 +6,6 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev107-1.18.0-rc'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.18.0-rc'
     compile 'com.google.oauth-client:google-oauth-client:1.20.0'
-    compile 'org.aeonbits.owner:owner:1.0.8'
 }
 
 mainClassName = 'feedmeyoutubecrawler.Main'

@@ -15,8 +15,8 @@ import org.aeonbits.owner.Config.Key;
  * @author Robert Lehmann
  * @since 1.0
  */
-@Config.Sources({"file:~/.crawler.config",
-    "classpath:crawler.config"})
+@Config.Sources({"file:~/.feedmeyoutube.config",
+    "classpath:feedmeyoutube.config"})
 public interface AppConfig extends Config {
     @Key("youtube.userId")
     String userId();

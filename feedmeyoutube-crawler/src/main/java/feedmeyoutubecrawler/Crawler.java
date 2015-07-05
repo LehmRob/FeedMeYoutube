@@ -54,40 +54,31 @@ public class Crawler {
 
     public List<YouTubeVideo> getUploadedVideos() throws IOException {
         List<YouTubeVideo> myVideos = new ArrayList<>();
-        final YouTube.Channels.List channelRequ = _youtube.channels().list(
-                "contentDetails");
-        channelRequ.setMine(Boolean.TRUE);
-        channelRequ.setFields("items/contentDetails, items/id, nextPageToken,pageInfo");
-        final ChannelListResponse response = channelRequ.execute();
-        final List<Channel> channels;
+        final Channel myChannel = getMyChannel();
 
-        if ((channels = response.getItems()) != null) {
-            final Channel myChannel = channels.get(0);
+        LOG.debug("My Channel ID {}", myChannel.getId());
 
-            LOG.debug("My Channel ID {}", myChannel.getId());
+        final String uploadPlaylistId = myChannel.getContentDetails().
+                getRelatedPlaylists().getUploads();
+        final List<PlaylistItem> playlistItems = new ArrayList<>();
+        final YouTube.PlaylistItems.List playlistItemsRequest = _youtube.
+                playlistItems().list("id,contentDetails,snippet");
+        playlistItemsRequest.setPlaylistId(uploadPlaylistId);
+        playlistItemsRequest.setFields(
+                "items(contentDetails/videoId,snippet/title, "
+                        + "snippet/description, snippet/publishedAt),"
+                + "nextPageToken, pageInfo");
 
-            final String uploadPlaylistId = myChannel.getContentDetails().
-                    getRelatedPlaylists().getUploads();
-            final List<PlaylistItem> playlistItems = new ArrayList<>();
-            final YouTube.PlaylistItems.List playlistItemsRequest = _youtube.
-                    playlistItems().list("id,contentDetails,snippet");
-            playlistItemsRequest.setPlaylistId(uploadPlaylistId);
-            playlistItemsRequest.setFields(
-                    "items(contentDetails/videoId,snippet/title, "
-                            + "snippet/description, snippet/publishedAt),"
-                    + "nextPageToken, pageInfo");
+        String nextToken = "";
+        do {
+            playlistItemsRequest.setPageToken(nextToken);
+            PlaylistItemListResponse playlistResponse
+                    = playlistItemsRequest.execute();
+            playlistItems.addAll(playlistResponse.getItems());
+            nextToken = playlistResponse.getNextPageToken();
+        } while (nextToken != null);
 
-            String nextToken = "";
-            do {
-                playlistItemsRequest.setPageToken(nextToken);
-                PlaylistItemListResponse playlistResponse
-                        = playlistItemsRequest.execute();
-                playlistItems.addAll(playlistResponse.getItems());
-                nextToken = playlistResponse.getNextPageToken();
-            } while (nextToken != null);
-
-            myVideos = mapVideos(playlistItems);
-        }
+        myVideos = mapVideos(playlistItems);
 
         return myVideos;
     }
@@ -105,11 +96,11 @@ public class Crawler {
     private static List<YouTubeVideo> mapVideos(
             final List<PlaylistItem> playlistItems) {
         final List<YouTubeVideo> mappedVids = new ArrayList<>();
-        
+
         for (final PlaylistItem item : playlistItems) {
             mappedVids.add(mapVideo(item));
         }
-        
+
         return mappedVids;
     }
 
@@ -124,5 +115,24 @@ public class Crawler {
     private static YouTubeVideo mapVideo(final PlaylistItem item) {
         return new YouTubeVideo(item.getContentDetails().getVideoId(), item.getSnippet().
                 getTitle(), item.getSnippet().getDescription(), null);
+    }
+
+    /**
+     * Request the own {@link Channel} from youtube
+     *
+     * @return {@link Channel} instance which represents the own channel
+     * @throws IOException Can't connect to youtube service.
+     *
+     * @since 1.0
+     */
+    private Channel getMyChannel() throws IOException {
+        final YouTube.Channels.List channelRequest = _youtube.channels()
+            .list("contentDetails");
+        channelRequest.setMine(Boolean.TRUE);
+        channelRequest.setFields("items/contentDetails, items/id");
+        channelRequest.setMaxResults(1L);
+        final ChannelListResponse response = channelRequest.execute();
+
+        return response.getItems().get(0);
     }
 }

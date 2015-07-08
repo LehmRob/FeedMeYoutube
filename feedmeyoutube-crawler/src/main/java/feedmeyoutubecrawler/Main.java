@@ -6,6 +6,7 @@ package feedmeyoutubecrawler;
  * of the MIT license.  See the LICENSE file for details.
  */
 
+import feedmeyoutubecrawler.crawler.Crawler;
 import feedmeyoutubecore.Version;
 import java.io.IOException;
 import org.slf4j.Logger;

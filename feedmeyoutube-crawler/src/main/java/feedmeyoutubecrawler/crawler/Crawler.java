@@ -1,4 +1,4 @@
-package feedmeyoutubecrawler;
+package feedmeyoutubecrawler.crawler;
 
 /* Copyright (C) 2015 Robert Lehmann <lehmrob@gmail.com>
  *
@@ -13,6 +13,7 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.common.collect.Lists;
 import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecrawler.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

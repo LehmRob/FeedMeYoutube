@@ -27,7 +27,7 @@ public class Main
         final Crawler crawler;
         try {
             crawler = new Crawler();
-            System.out.println(crawler.getUploadedVideos());
+            crawler.crawl();
         } catch (final IOException ex) {
             LOG.error("Error during the initialisation of the crawler", ex);
         }

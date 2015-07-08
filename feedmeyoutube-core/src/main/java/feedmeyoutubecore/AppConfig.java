@@ -38,4 +38,8 @@ public interface AppConfig extends Config {
     
     @Key("mysql.db")
     String mysqlDb();
+    
+    @Key("response.count")
+    @DefaultValue("3")
+    long responseCount();
 }

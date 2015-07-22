@@ -61,6 +61,14 @@ public class VideoCrawler {
                 getContentDetails().getRelatedPlaylists().getUploads());
     }
 
+    /**
+     * Get the next videos in the uploaded playlist
+     *
+     * @return {@link List} with crawled youtube videos.
+     *
+     * @throws IOException Can't connect to the youtube servers
+     * @since 1.0
+     */
     public List<YouTubeVideo> getNextVideos() throws IOException {
         final List<PlaylistItem> playlistItems = new ArrayList<>();
 
@@ -68,9 +76,20 @@ public class VideoCrawler {
         PlaylistItemListResponse playlistResponse
                 = _uploadedVideosRequest.execute();
         playlistItems.addAll(playlistResponse.getItems());
-            _nextToken = playlistResponse.getNextPageToken();
+        _nextToken = playlistResponse.getNextPageToken();
 
         return mapVideos(playlistItems);
+    }
+
+    /**
+     * Check if there is an next page availible
+     *
+     * @return {@code true} if more videos are availible
+     *
+     * @since 1.0
+     */
+    public boolean hasNext() {
+        return _nextToken != null;
     }
 
     /**
@@ -113,7 +132,7 @@ public class VideoCrawler {
      *
      * @return {@link Channel} instance which represents the own channel
      *
-     * @throws IOException Can't connect to youtube service.    
+     * @throws IOException Can't connect to youtube service.
      *
      * @since 1.0
      */
@@ -161,7 +180,7 @@ public class VideoCrawler {
      *
      * @since 1.0
      */
-    private String getUploadPlaylistId() {
-        return _myChannel.getContentDetails().getRelatedPlaylists().getUploads();
-    }
+//    private String getUploadPlaylistId() {
+//        return _myChannel.getContentDetails().getRelatedPlaylists().getUploads();
+//    }
 }

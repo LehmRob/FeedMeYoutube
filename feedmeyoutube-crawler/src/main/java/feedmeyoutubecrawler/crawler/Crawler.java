@@ -1,7 +1,9 @@
 package feedmeyoutubecrawler.crawler;
 
+import feedmeyoutubecore.ExistenceChecker;
 import feedmeyoutubecore.obj.YouTubeVideo;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /* Copyright (C) 2015 Robert Lehmann <lehmrob@gmail.com>
@@ -36,7 +38,15 @@ public class Crawler {
      * @since 1.0
      */
     public void crawl() throws IOException {
-        final List<YouTubeVideo> list = _videoCrawler.getNextVideos();
+        final List<YouTubeVideo> list = new ArrayList<>();
+        
+        while (_videoCrawler.hasNext()) {
+            System.out.println("Next");
+            list.addAll(_videoCrawler.getNextVideos());
+        }
+        
+        list.stream().forEach(video -> ExistenceChecker.CheckItem(video));
+        
         System.out.println(list);
     }
 }

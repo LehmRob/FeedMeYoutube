@@ -106,9 +106,7 @@ public class VideoCrawler {
             final List<PlaylistItem> playlistItems) {
         final List<YouTubeVideo> mappedVids = new ArrayList<>();
 
-        for (final PlaylistItem item : playlistItems) {
-            mappedVids.add(mapVideo(item));
-        }
+        playlistItems.stream().forEach((item) -> mappedVids.add(mapVideo(item)));
 
         return mappedVids;
     }

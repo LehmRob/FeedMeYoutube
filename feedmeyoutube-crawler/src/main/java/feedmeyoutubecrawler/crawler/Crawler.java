@@ -1,10 +1,11 @@
 package feedmeyoutubecrawler.crawler;
 
-import feedmeyoutubecore.ExistenceChecker;
 import feedmeyoutubecore.obj.YouTubeVideo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /* Copyright (C) 2015 Robert Lehmann <lehmrob@gmail.com>
  *
@@ -20,6 +21,9 @@ import java.util.List;
 public class Crawler {
 
     private final VideoCrawler _videoCrawler;
+    private final YouTubeConnection _connection;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
 
     /**
      * Constructor for the {@link Crawler}
@@ -28,7 +32,8 @@ public class Crawler {
      * @since 1.0
      */
     public Crawler() throws IOException {
-        _videoCrawler = new VideoCrawler();
+        _connection = new YouTubeConnection();
+        _videoCrawler = new VideoCrawler(_connection);
     }
 
     /**
@@ -45,7 +50,9 @@ public class Crawler {
             list.addAll(_videoCrawler.getNextVideos());
         }
         
-        list.stream().forEach(video -> ExistenceChecker.CheckItem(video));
+        list.stream().forEach(video -> {
+            LOG.info(video.VideoTitle);
+        });
         
         System.out.println(list);
     }

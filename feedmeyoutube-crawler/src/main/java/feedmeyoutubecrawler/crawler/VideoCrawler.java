@@ -5,7 +5,6 @@
  */
 package feedmeyoutubecrawler.crawler;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -14,7 +13,6 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.common.collect.Lists;
 import feedmeyoutubecore.AppConfig;
 import feedmeyoutubecore.obj.YouTubeVideo;
-import feedmeyoutubecrawler.Auth;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VideoCrawler {
 
-    private final Credential _credential;
-    private final YouTube _youtube;
+    private final YouTubeConnection _connection;
     private final Channel _myChannel;
     private final YouTube.PlaylistItems.List _uploadedVideosRequest;
     private String _nextToken = "";
@@ -47,14 +44,12 @@ public class VideoCrawler {
     /**
      * Constructor.
      *
+     * @param connection instance of {@link YouTubeConnection}
      * @throws IOException Error occured during the authorisation
      * @since 1.0
      */
-    public VideoCrawler() throws IOException {
-        _credential = Auth.authorize(scopes, APP_NAME);
-        _youtube = new YouTube.Builder(Auth.getHttpTransport(), Auth.
-                getJsonFactory(), _credential).setApplicationName(APP_NAME)
-                .build();
+    public VideoCrawler(final YouTubeConnection connection) throws IOException {
+        _connection = connection;
         _myChannel = getMyChannel();
         LOG.debug("My channel {}", _myChannel.toPrettyString());
         _uploadedVideosRequest = createPlaylistItemsRequest(_myChannel.
@@ -135,8 +130,8 @@ public class VideoCrawler {
      * @since 1.0
      */
     private Channel getMyChannel() throws IOException {
-        final YouTube.Channels.List channelRequest = _youtube.channels()
-                .list("contentDetails");
+        final YouTube.Channels.List channelRequest = _connection.getYouTube()
+                .channels().list("contentDetails");
         channelRequest.setMine(Boolean.TRUE);
         channelRequest.setFields("items/contentDetails, items/id");
         channelRequest.setMaxResults(CFG.responseCount());
@@ -160,8 +155,8 @@ public class VideoCrawler {
      */
     private YouTube.PlaylistItems.List createPlaylistItemsRequest(
             final String playlistId) throws IOException {
-        final YouTube.PlaylistItems.List request = _youtube.playlistItems().
-                list("id,contentDetails,snippet");
+        final YouTube.PlaylistItems.List request = _connection.getYouTube()
+                .playlistItems().list("id,contentDetails,snippet");
         request.setMaxResults(5L);
         request.setPlaylistId(playlistId);
         request.setFields("items(contentDetails/videoId,snippet/title, "

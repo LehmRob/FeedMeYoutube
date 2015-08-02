@@ -50,7 +50,7 @@ public class VideoCrawler {
      */
     public VideoCrawler(final YouTubeConnection connection) throws IOException {
         _connection = connection;
-        _myChannel = getMyChannel();
+        _myChannel = CrawlerUtils.getMyChannel(_connection);
         LOG.debug("My channel {}", _myChannel.toPrettyString());
         _uploadedVideosRequest = createPlaylistItemsRequest(_myChannel.
                 getContentDetails().getRelatedPlaylists().getUploads());
@@ -118,26 +118,6 @@ public class VideoCrawler {
         return new YouTubeVideo(item.getContentDetails().getVideoId(), item.
                 getSnippet().getTitle(), item.getSnippet().getDescription(),
                 null);
-    }
-
-    /**
-     * Request the own {@link Channel} from youtube
-     *
-     * @return {@link Channel} instance which represents the own channel
-     *
-     * @throws IOException Can't connect to youtube service.
-     *
-     * @since 1.0
-     */
-    private Channel getMyChannel() throws IOException {
-        final YouTube.Channels.List channelRequest = _connection.getYouTube()
-                .channels().list("contentDetails");
-        channelRequest.setMine(Boolean.TRUE);
-        channelRequest.setFields("items/contentDetails, items/id");
-        channelRequest.setMaxResults(CFG.responseCount());
-        final ChannelListResponse response = channelRequest.execute();
-
-        return response.getItems().get(0);
     }
 
     /**

@@ -7,18 +7,18 @@ package feedmeyoutubecrawler.crawler;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.common.collect.Lists;
 import feedmeyoutubecore.AppConfig;
 import feedmeyoutubecore.obj.YouTubeVideo;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.aeonbits.owner.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Crawler for all youtube videos. This class is responsible for crawling all
@@ -28,10 +28,9 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public class VideoCrawler {
-
-    private final YouTubeConnection _connection;
-    private final Channel _myChannel;
-    private final YouTube.PlaylistItems.List _uploadedVideosRequest;
+    private YouTubeConnection _connection;
+    private Channel _myChannel;
+    private final YouTube.PlaylistItems.List _videosRequest;
     private String _nextToken = "";
 
     private static final String APP_NAME = "feedmeyoutube";
@@ -49,11 +48,23 @@ public class VideoCrawler {
      * @since 1.0
      */
     public VideoCrawler(final YouTubeConnection connection) throws IOException {
-        _connection = connection;
-        _myChannel = CrawlerUtils.getMyChannel(_connection);
-        LOG.debug("My channel {}", _myChannel.toPrettyString());
-        _uploadedVideosRequest = createPlaylistItemsRequest(_myChannel.
+        init(connection);
+        _videosRequest = createPlaylistItemsRequest(_myChannel.
                 getContentDetails().getRelatedPlaylists().getUploads());
+    }
+
+    /**
+     * Constructor for a custom playlist.
+     *
+     * @param connection {@link YouTubeConnection} instance which stands for
+     * the connection to the youtube servers<
+     *
+     * @since 1.0
+     */
+    public VideoCrawler(final YouTubeConnection connection, final String playlistId)
+        throws IOException {
+        init(connection);
+        _videosRequest = createPlaylistItemsRequest(playlistId);
     }
 
     /**
@@ -67,9 +78,9 @@ public class VideoCrawler {
     public List<YouTubeVideo> getNextVideos() throws IOException {
         final List<PlaylistItem> playlistItems = new ArrayList<>();
 
-        _uploadedVideosRequest.setPageToken(_nextToken);
+        _videosRequest.setPageToken(_nextToken);
         PlaylistItemListResponse playlistResponse
-                = _uploadedVideosRequest.execute();
+                = _videosRequest.execute();
         playlistItems.addAll(playlistResponse.getItems());
         _nextToken = playlistResponse.getNextPageToken();
 
@@ -85,6 +96,19 @@ public class VideoCrawler {
      */
     public boolean hasNext() {
         return _nextToken != null;
+    }
+
+    /**
+     * Init the local attributes
+     *
+     * @param connection Abstranction for the connection to the youtube servers
+     *
+     * @since 1.0
+     */
+    private void init(final YouTubeConnection connection) throws IOException {
+        _connection = connection;
+        _myChannel = CrawlerUtils.getMyChannel(_connection);
+        LOG.debug("My channel {}", _myChannel.toPrettyString());
     }
 
     /**
@@ -109,7 +133,7 @@ public class VideoCrawler {
     /**
      * Map an {@link PlaylistItem} to an {@link YouTubeVideo}
      *
-     * @param playlistItem {@link PlaylistItem} which will be mapped
+     * @param item {@link PlaylistItem} which will be mapped
      * @return {@link YouTubeVideo} which will be the result of the mapping
      *
      * @since 1.0

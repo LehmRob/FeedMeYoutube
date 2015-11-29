@@ -6,9 +6,8 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev107-1.18.0-rc'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.18.0-rc'
     compile 'com.google.oauth-client:google-oauth-client:1.20.0'
+    testCompile 'junit:junit:4.12'
 }
-
-mainClassName = 'feedmeyoutubecrawler.Main'
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'feedmeyoutubecrawler.Main'

@@ -7,6 +7,7 @@
 package feedmeyoutube.crawler;
 
 import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecrawler.crawler.Crawler;
 import feedmeyoutubecrawler.crawler.VideoCrawler;
 import feedmeyoutubecrawler.crawler.YouTubeConnection;
 import org.junit.Assert;
@@ -23,9 +24,11 @@ import java.util.List;
 public class TestVideoCrawler {
     @Test
     public void testGetNextVideos() throws Exception {
-        final VideoCrawler vc = new VideoCrawler(new YouTubeConnection());
+        final Crawler<YouTubeVideo> vc;
+        vc = new VideoCrawler(new YouTubeConnection());
         Assert.assertTrue("There are more videos", vc.hasNext());
-        final List<YouTubeVideo> videos = vc.getNextVideos();
-        Assert.assertTrue(vc.getNextVideos().size() == 5);
+        final List<YouTubeVideo> videos = vc.getNext();
+        Assert.assertEquals(vc.getNext().size(), 5);
+        videos.stream().forEach(youTubeVideo -> Assert.assertNotNull(youTubeVideo.VideoId));
     }
 }

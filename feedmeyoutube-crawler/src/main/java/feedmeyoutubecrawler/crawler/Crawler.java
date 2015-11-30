@@ -1,59 +1,38 @@
-package feedmeyoutubecrawler.crawler;
-
-import feedmeyoutubecore.obj.YouTubeVideo;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /* Copyright (C) 2015 Robert Lehmann <lehmrob@gmail.com>
  *
  * This software may be modified and distributed under the terms
  * of the MIT license.  See the LICENSE file for details.
  */
+
+package feedmeyoutubecrawler.crawler;
+
+import java.io.IOException;
+import java.util.List;
+
 /**
- * This is the main crawler class which runs the crawler
+ * This interface defines the methodes for the diffrent crawler.
  *
  * @author Robert Lehmann
  * @since 1.0
  */
-public class Crawler {
-
-    private final VideoCrawler _videoCrawler;
-    private final YouTubeConnection _connection;
-    
-    private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
-
+public interface Crawler<T> {
     /**
-     * Constructor for the {@link Crawler}
+     * Check if there are more elements to crawl.
      *
-     * @throws IOException Error occurs during authorisation of the craweler
+     * This methode looks if there are more elements availible at youtube which can be crawled by
+     * the application
+     * @return {@code true} if there are more elements to crawl, else return {@code false}.
      * @since 1.0
      */
-    public Crawler() throws IOException {
-        _connection = new YouTubeConnection();
-        _videoCrawler = new VideoCrawler(_connection);
-    }
+    boolean hasNext();
 
     /**
-     * Crawl the information from the youtube account
+     * Gets a list of next elements from the web service.
      *
-     * @throws IOException Can't connect to YouTube.
+     * This methode returns a list of crawled elements from the YouTube web service.
+     * @return {@link List} of elements from the type {@link T}
+     * @throws IOException Can't crawl the next elements from the webservice
      * @since 1.0
      */
-    public void crawl() throws IOException {
-        final List<YouTubeVideo> list = new ArrayList<>();
-        
-        while (_videoCrawler.hasNext()) {
-            System.out.println("Next");
-            list.addAll(_videoCrawler.getNextVideos());
-        }
-        
-        list.stream().forEach(video -> {
-            LOG.info(video.VideoTitle);
-        });
-        
-        System.out.println(list);
-    }
+    List<T> getNext() throws IOException;
 }

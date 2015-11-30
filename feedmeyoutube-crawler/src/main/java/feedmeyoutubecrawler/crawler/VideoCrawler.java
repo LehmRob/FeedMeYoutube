@@ -9,10 +9,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
-import com.google.common.collect.Lists;
-import feedmeyoutubecore.AppConfig;
 import feedmeyoutubecore.obj.YouTubeVideo;
-import org.aeonbits.owner.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,18 +24,13 @@ import java.util.List;
  * @author Robert Lehmann
  * @since 1.0
  */
-public class VideoCrawler {
+public class VideoCrawler implements Crawler<YouTubeVideo> {
     private YouTubeConnection _connection;
     private Channel _myChannel;
     private final YouTube.PlaylistItems.List _videosRequest;
     private String _nextToken = "";
 
-    private static final String APP_NAME = "feedmeyoutube";
     private static final Logger LOG = LoggerFactory.getLogger(Crawler.class);
-    private static final AppConfig CFG = ConfigFactory.create(AppConfig.class);
-
-    private final static List<String> scopes = Lists.newArrayList(
-            "https://www.googleapis.com/auth/youtube.readonly");
 
     /**
      * Constructor.
@@ -67,15 +59,15 @@ public class VideoCrawler {
         _videosRequest = createPlaylistItemsRequest(playlistId);
     }
 
-    /**
-     * Get the next videos in the uploaded playlist
-     *
-     * @return {@link List} with crawled youtube videos.
-     *
-     * @throws IOException Can't connect to the youtube servers
-     * @since 1.0
-     */
-    public List<YouTubeVideo> getNextVideos() throws IOException {
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasNext() {
+        return _nextToken != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<YouTubeVideo> getNext() throws IOException {
         final List<PlaylistItem> playlistItems = new ArrayList<>();
 
         _videosRequest.setPageToken(_nextToken);
@@ -85,17 +77,6 @@ public class VideoCrawler {
         _nextToken = playlistResponse.getNextPageToken();
 
         return mapVideos(playlistItems);
-    }
-
-    /**
-     * Check if there is an next page availible
-     *
-     * @return {@code true} if more videos are availible
-     *
-     * @since 1.0
-     */
-    public boolean hasNext() {
-        return _nextToken != null;
     }
 
     /**
@@ -168,16 +149,4 @@ public class VideoCrawler {
                 + "nextPageToken, pageInfo");
         return request;
     }
-
-    /**
-     * Gets the ID of the upload playlist. Reads the id of the uploaded video
-     * playlist from {@link Channel}.
-     *
-     * @return ID of the uploaded video playlist
-     *
-     * @since 1.0
-     */
-//    private String getUploadPlaylistId() {
-//        return _myChannel.getContentDetails().getRelatedPlaylists().getUploads();
-//    }
 }

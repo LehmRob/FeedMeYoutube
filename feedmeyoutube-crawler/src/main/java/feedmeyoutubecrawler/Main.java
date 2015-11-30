@@ -6,8 +6,11 @@ package feedmeyoutubecrawler;
  * of the MIT license.  See the LICENSE file for details.
  */
 
+import com.google.api.services.youtube.model.Playlist;
 import feedmeyoutubecore.Version;
 import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecrawler.crawler.Crawler;
+import feedmeyoutubecrawler.crawler.PlaylistCrawler;
 import feedmeyoutubecrawler.crawler.VideoCrawler;
 import feedmeyoutubecrawler.crawler.YouTubeConnection;
 import org.slf4j.Logger;
@@ -30,12 +33,25 @@ public class Main
         LOG.debug("Starting App in Version {}", Version.VERSION);
 
         try {
-            final VideoCrawler vc = new VideoCrawler(new YouTubeConnection());
+            final Crawler<YouTubeVideo> vc = new VideoCrawler(new YouTubeConnection());
+            final Crawler<Playlist> pc = new PlaylistCrawler(new YouTubeConnection());
             if (vc.hasNext()) {
-                List<YouTubeVideo> videos = vc.getNextVideos();
+                List<YouTubeVideo> videos = vc.getNext();
                 LOG.info("Size of video list {}", videos.size());
                 videos.stream().forEach(video -> LOG.info("Video info {}", video.VideoId));
             }
+            if (pc.hasNext()) {
+                List<Playlist> playlists = pc.getNext();
+                LOG.info("Size of Playlist list {}", playlists.size());
+                playlists.stream().forEach(playlist -> LOG.info("Playlist info {}", playlist.getId()));
+            }
+
+            if (pc.hasNext()) {
+                List<Playlist> playlists = pc.getNext();
+                LOG.info("Size of Playlist list {}", playlists.size());
+                playlists.stream().forEach(playlist -> LOG.info("Playlist info {}", playlist.getId()));
+            }
+
         } catch (final IOException e) {
             LOG.error("Can't connect to youtube", e);
         }

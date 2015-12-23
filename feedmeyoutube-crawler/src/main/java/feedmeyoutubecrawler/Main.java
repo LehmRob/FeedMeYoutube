@@ -8,7 +8,7 @@ package feedmeyoutubecrawler;
 
 import com.google.api.services.youtube.model.Playlist;
 import feedmeyoutubecore.Version;
-import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecore.youtube.Video;
 import feedmeyoutubecrawler.crawler.Crawler;
 import feedmeyoutubecrawler.crawler.PlaylistCrawler;
 import feedmeyoutubecrawler.crawler.VideoCrawler;
@@ -33,10 +33,10 @@ public class Main
         LOG.debug("Starting App in Version {}", Version.VERSION);
 
         try {
-            final Crawler<YouTubeVideo> vc = new VideoCrawler(new YouTubeConnection());
+            final Crawler<Video> vc = new VideoCrawler(new YouTubeConnection());
             final Crawler<Playlist> pc = new PlaylistCrawler(new YouTubeConnection());
             if (vc.hasNext()) {
-                List<YouTubeVideo> videos = vc.getNext();
+                List<Video> videos = vc.getNext();
                 LOG.info("Size of video list {}", videos.size());
                 videos.stream().forEach(video -> LOG.info("Video info {}", video.VideoId));
             }
@@ -49,7 +49,7 @@ public class Main
             if (pc.hasNext()) {
                 List<Playlist> playlists = pc.getNext();
                 LOG.info("Size of Playlist list {}", playlists.size());
-                playlists.stream().forEach(playlist -> LOG.info("Playlist info {}", playlist.getId()));
+                playlists.stream().forEach(playlist -> LOG.info("Playlist info {}", playlist.getSnippet().getTitle()));
             }
 
         } catch (final IOException e) {

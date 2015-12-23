@@ -12,3 +12,5 @@ dependencies {
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'feedmeyoutubecrawler.Main'
 }
+
+mainClassName = 'feedmeyoutubecrawler.Main'

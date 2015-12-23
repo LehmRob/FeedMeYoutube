@@ -3,8 +3,8 @@ package feedmeyoutubecore;
 import feedmeyoutubecore.helper.DbConnector;
 import feedmeyoutubecore.methods.SaveVideo;
 import feedmeyoutubecore.methods.SavePlaylist;
-import feedmeyoutubecore.obj.YouTubePlaylist;
-import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecore.youtube.Playlist;
+import feedmeyoutubecore.youtube.Video;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class ExistenceChecker {
     // The Logger
     private static final Logger Log = LoggerFactory.getLogger(Main.class);
 
-    public static void CheckItem(YouTubeVideo video)
+    public static void CheckItem(Video video)
     {
         try {
             // Establish the Database connection
@@ -43,7 +43,7 @@ public class ExistenceChecker {
         }
     }
 
-    public static void CheckItem(YouTubePlaylist playlist)
+    public static void CheckItem(Playlist playlist)
     {
         try {
             // Establish the Database connection
@@ -59,7 +59,7 @@ public class ExistenceChecker {
                 SavePlaylist.Save(playlist, con);
             } else {
                 Log.info("The Youtube Playlist with the specific ID " + playlist.PlaylistId + " has already been recorded!");
-                Log.info("Refreshing all the containing Videos für the Playlist " + playlist.PlaylistTitle);
+                Log.info("Refreshing all the containing Videos fï¿½r the Playlist " + playlist.PlaylistTitle);
 
                 RefreshPlaylist(playlist);
 
@@ -74,7 +74,7 @@ public class ExistenceChecker {
         }
     }
 
-    private static void RefreshPlaylist(YouTubePlaylist playlist)
+    private static void RefreshPlaylist(Playlist playlist)
     {
         for (final String videoId : playlist.VideoList)
         {

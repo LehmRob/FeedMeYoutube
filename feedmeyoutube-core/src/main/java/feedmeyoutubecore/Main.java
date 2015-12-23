@@ -1,9 +1,7 @@
 package feedmeyoutubecore;
 
-import feedmeyoutubecore.methods.SavePlaylist;
-import feedmeyoutubecore.methods.SaveVideo;
-import feedmeyoutubecore.obj.YouTubeVideo;
-import feedmeyoutubecore.obj.YouTubePlaylist;
+import feedmeyoutubecore.youtube.Video;
+import feedmeyoutubecore.youtube.Playlist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +18,9 @@ public class Main {
         Log.info("Starting core version: {}", Version.VERSION);
 
         // Creating some test objects
-        YouTubeVideo vid = new YouTubeVideo("DemoId1245", "Demo Title", "Demo Description", new Date());
+        Video vid = new Video("DemoId1245", "Demo Title", "Demo Description", new Date());
         List<String> vidList = asList(vid.VideoId);
-        YouTubePlaylist plist = new YouTubePlaylist("PlaylistId2", "Playlist Title", "Playlist Description", vidList);
+        Playlist plist = new Playlist("PlaylistId2", "Playlist Title", "Playlist Description", vidList);
 
         // Calling the Methods for testing
         ExistenceChecker.CheckItem(vid);

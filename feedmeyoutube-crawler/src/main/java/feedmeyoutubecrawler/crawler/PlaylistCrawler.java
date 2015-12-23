@@ -41,27 +41,27 @@ public class PlaylistCrawler implements Crawler<Playlist> {
      */
     public PlaylistCrawler(final YouTubeConnection connection) throws
         IOException {
-        _connection = connection;
-        _channel = CrawlerUtils.getMyChannel(connection);
-        _playlistReq = createPlaylistReq();
-    }
+            _connection = connection;
+            _channel = CrawlerUtils.getMyChannel(connection);
+            _playlistReq = createPlaylistReq();
+        }
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasNext() {return _nextToken != null;}
+        public boolean hasNext() {return _nextToken != null;}
 
     /** {@inheritDoc} */
     @Override
-    public List<Playlist> getNext() throws IOException {
-        final List <Playlist> playlists = new ArrayList<>();
+        public List<Playlist> getNext() throws IOException {
+            final List <Playlist> playlists = new ArrayList<>();
 
-        _playlistReq.setPageToken(_nextToken);
-        PlaylistListResponse playlistListResponse = _playlistReq.execute();
-        playlists.addAll(playlistListResponse.getItems());
-        _nextToken = playlistListResponse.getNextPageToken();
+            _playlistReq.setPageToken(_nextToken);
+            PlaylistListResponse playlistListResponse = _playlistReq.execute();
+            playlists.addAll(playlistListResponse.getItems());
+            _nextToken = playlistListResponse.getNextPageToken();
 
-        return playlists;
-    }
+            return playlists;
+        }
 
     /**
      * Creates the playlist request.
@@ -73,7 +73,7 @@ public class PlaylistCrawler implements Crawler<Playlist> {
      * @since 1.0
      */
     private YouTube.Playlists.List createPlaylistReq() throws IOException {
-    	final YouTube.Playlists.List request = _connection.getYouTube().playlists().list(
+        final YouTube.Playlists.List request = _connection.getYouTube().playlists().list(
                 "id,snippet");
         request.setMaxResults(1L);
         request.setChannelId(_channel.getId());

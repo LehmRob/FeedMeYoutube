@@ -9,7 +9,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
-import feedmeyoutubecore.obj.YouTubeVideo;
+import feedmeyoutubecore.youtube.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ import java.util.List;
  * @author Robert Lehmann
  * @since 1.0
  */
-public class VideoCrawler implements Crawler<YouTubeVideo> {
+public class VideoCrawler implements Crawler<Video> {
     private YouTubeConnection _connection;
     private Channel _myChannel;
     private final YouTube.PlaylistItems.List _videosRequest;
@@ -67,7 +67,7 @@ public class VideoCrawler implements Crawler<YouTubeVideo> {
 
     /** {@inheritDoc} */
     @Override
-    public List<YouTubeVideo> getNext() throws IOException {
+    public List<Video> getNext() throws IOException {
         final List<PlaylistItem> playlistItems = new ArrayList<>();
 
         _videosRequest.setPageToken(_nextToken);
@@ -94,17 +94,17 @@ public class VideoCrawler implements Crawler<YouTubeVideo> {
 
     /**
      * Map an {@link List} of {@link PlaylistItem}s to an {@link List} of
-     * {@link YouTubeVideo}s
+     * {@link Video}s
      *
      * @param playlistItems {@link List} of {@link PlaylistItem}s which will be
      *                      mapped
-     * @return {@link List} of mapped {@link YouTubeVideo}
+     * @return {@link List} of mapped {@link Video}
      *
      * @since 1.0
      */
-    private static List<YouTubeVideo> mapVideos(
+    private static List<Video> mapVideos(
             final List<PlaylistItem> playlistItems) {
-        final List<YouTubeVideo> mappedVids = new ArrayList<>();
+        final List<Video> mappedVids = new ArrayList<>();
 
         playlistItems.stream().forEach((item) -> mappedVids.add(mapVideo(item)));
 
@@ -112,15 +112,15 @@ public class VideoCrawler implements Crawler<YouTubeVideo> {
     }
 
     /**
-     * Map an {@link PlaylistItem} to an {@link YouTubeVideo}
+     * Map an {@link PlaylistItem} to an {@link Video}
      *
      * @param item {@link PlaylistItem} which will be mapped
-     * @return {@link YouTubeVideo} which will be the result of the mapping
+     * @return {@link Video} which will be the result of the mapping
      *
      * @since 1.0
      */
-    private static YouTubeVideo mapVideo(final PlaylistItem item) {
-        return new YouTubeVideo(item.getContentDetails().getVideoId(), item.
+    private static Video mapVideo(final PlaylistItem item) {
+        return new Video(item.getContentDetails().getVideoId(), item.
                 getSnippet().getTitle(), item.getSnippet().getDescription(),
                 null);
     }
